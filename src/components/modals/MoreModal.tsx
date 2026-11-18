@@ -1,10 +1,11 @@
-import DeleteComment from '@/api/deleteComment';
-import deletePost from '@/api/deletePost';
+import DeleteComment from '@/api/comment/deleteComment';
+import deletePost from '@/api/postDetail/deletePost';
 import { useAuthStore } from '@/app/login/store/useAuthStore';
 import usePostIdStore from '@/app/post/[postId]/store/usePostIdStore';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React, { Dispatch, SetStateAction } from 'react';
+import { useSidebarStore } from '@/store/sidebar/useSidebarStore';
 
 interface Props {
   type: 'owner' | 'user';
@@ -36,6 +37,11 @@ function MoreModal({
   const router = useRouter();
   const queryClient = useQueryClient();
   const { setPostVoteResult } = usePostIdStore();
+  const isDarkMode = useSidebarStore((state) => state.isDarkMode);
+  const modalClass = isDarkMode
+    ? 'border-[#484B4D] bg-[#242526] text-[#787C80]'
+    : 'border-gray-150 bg-white text-gray-500';
+  const dividerClass = isDarkMode ? 'border-[#484B4D]' : 'border-gray-20';
 
   const { mutate: deletePostItem } = useMutation({
     mutationFn: () => deletePost(postId, accessToken),
@@ -66,16 +72,19 @@ function MoreModal({
   const handleClick = (text: string) => {
     switch (text) {
       case '수정':
-        // where에 따른 댓글 수정, 게시글 수정 api 호출 다르게
         if (where === 'post') {
           if (!isEditPostPossible) {
-          return  alert("게시글은 판결기간 종료 24시간 전까지만 수정이 가능합니다.")
+            return alert('게시글은 판결기간 종료 24시간 전까지만 수정이 가능합니다.');
           }
-          router.push(`/post/${postId}/edit`);
+          alert('준비중입니다.');
+          // router.push(`/post/${postId}/edit`);
         }
         break;
       case '삭제':
-        if (where === 'post' && confirm('이 게시글을 삭제하면 복구할 수 없습니다.\n게시글을 삭제하시겠습니까?')) {
+        if (
+          where === 'post' &&
+          confirm('이 게시글을 삭제하면 복구할 수 없습니다.\n게시글을 삭제하시겠습니까?')
+        ) {
           deletePostItem();
         } else if (where === 'comment' && confirm('댓글을 삭제하시겠습니까?')) {
           deleteComment();
@@ -94,11 +103,11 @@ function MoreModal({
   };
 
   return (
-    <div className='w-[62px] max-h-[54px] min-h-[29px] p-[5px] rounded-[10px] border border-[#C8C8C8] z-100 bg-white'>
-      <div className='flex flex-col text-[12px] font-medium h-full text-[#828282] text-center justify-center gap-[3px]'>
+    <div className={`w-[62px] max-h-[54px] min-h-[29px] p-[5px] rounded-[10px] border z-100 ${modalClass}`}>
+      <div className='flex flex-col text-[12px] font-medium h-full text-center justify-center gap-[3px]'>
         {items.map((item, index) => (
           <React.Fragment key={index}>
-            {index > 0 && <hr className='border-t border-[#F8F8F8]' />}
+            {index > 0 && <hr className={`border-t ${dividerClass}`} />}
             <div className='cursor-pointer' onClick={() => handleClick(item)}>
               {item}
             </div>

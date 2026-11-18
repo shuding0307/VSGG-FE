@@ -1,12 +1,13 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import PostComment from '@/api/postComment';
-import getComments from '@/api/getComments';
+import PostComment from '@/api/comment/postComment';
+import getComments from '@/api/comment/getComments';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/app/login/store/useAuthStore';
 import MoreModal from '@/components/modals/MoreModal';
 import Icon_more from '../../../../../../public/svg/Icon_more.svg';
+import Icon_line from '../../../../../../public/svg/mobile/postItem/line.svg';
 import Image from 'next/image';
 import useCommentStore from '../../store/useCommentStore';
 import PostCommentInput from './CommentInputMobile';
@@ -67,14 +68,12 @@ function CommentAreaMobile({ setIsLoginModalOpen }: ICommentArea) {
   const handleReplyScroll = (id: number) => {
     if (replyRef.current[id]) {
       replyRef.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log(replyRef.current);
     }
   };
 
   const handleCommentScroll = (id: number) => {
     if (commentRef.current[id]) {
       commentRef.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      console.log(commentRef.current);
     }
   };
 
@@ -126,9 +125,9 @@ function CommentAreaMobile({ setIsLoginModalOpen }: ICommentArea) {
   };
 
   return (
-    <div className='relative min-h-[400px] w-full rounded-[30px] flex flex-col mb-[30px] p-[30px] gap-[15px]'>
+    <div className='relative min-h-[400px] w-full rounded-[30px] flex flex-col mt-[30px] gap-[12px]'>
       <div>
-        <p className='p-content-s-mb text-[16px]'>댓글</p>
+        <p className='p-content-s-mb text-[18px] font-semibold'>댓글</p>
         <div className='flex flex-row w-full'>
           <FormProvider {...commentMethods}>
             <form className='w-full' onSubmit={commentMethods.handleSubmit(onCommentSubmit)}>
@@ -180,16 +179,37 @@ function CommentAreaMobile({ setIsLoginModalOpen }: ICommentArea) {
                       key={index}
                       type='button'
                       onClick={() => handleOpenReply(comment.id)}
-                      className='my-[5px] text-[14px] font-medium text-[#8A1F21]'
+                      className='my-[5px] text-[14px] font-medium text-primary-500'
                     >
-                      {showReply === comment.id
-                        ? '- 답글 숨기기'
-                        : comment.children?.length !== 0 &&
-                          `- 답글 보기 (${comment.children?.length})개`}
+                      {showReply === comment.id ? (
+                        <div className='flex items-center '>
+                          <Image
+                            src={Icon_line}
+                            alt='line'
+                            width={19}
+                            height={1}
+                            className='inline-block mr-[5px]'
+                          />
+                          <p className='text-[12px]'>답글 숨기기</p>
+                        </div>
+                      ) : (
+                        comment.children?.length !== 0 && (
+                          <div className='flex items-center '>
+                            <Image
+                              src={Icon_line}
+                              alt='line'
+                              width={19}
+                              height={1}
+                              className='inline-block mr-[5px]'
+                            />
+                            <p className='text-[12px]'>답글 보기 ({comment.children?.length})개</p>
+                          </div>
+                        )
+                      )}
                     </button>
                   )}
                   {showReply === comment.id && (
-                    <div className='pl-6'>
+                    <div className='pl-6 '>
                       {comment.children?.map((reply: IGetCommentItemType, index: number) => (
                         <div key={index} className='flex justify-between relative mb-[20px]'>
                           <CommentMobile

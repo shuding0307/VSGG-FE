@@ -10,19 +10,18 @@ import DarkMode from './footer/DarkMode';
 import AdditionalOption from './footer/AdditionalOption';
 import { useAuthStore } from '@/app/login/store/useAuthStore';
 import { useQuery } from '@tanstack/react-query';
-import getAlarms from '@/api/getAlarms';
+import getAlarms from '@/api/alarm/getAlarms';
 import AlarmModal from './modal/alarm/AlarmModal';
 import AdditionalOptionModal from './modal/additionalOption/AdditionalOptionModal';
 import { useSidebarStore } from '@/store/sidebar/useSidebarStore';
 import { SidebarModalLayout } from '../modals/SidebarModalLayout';
 import SearchModal from './modal/search/SearchModal';
-import { useLoginStore } from '@/store/login/useLoginStore';
 
 function Sidebar() {
   const [isAdditionalModalOpen, setIsAdditionalModalOpen] = useState<boolean>(false);
   const { isLogin, accessToken } = useAuthStore();
-  const { isNotificationOpen, setIsNotificationOpen, isSearchOpen, setIsSearchOpen } = useSidebarStore();
-  const {setIsLoginModalOpen} = useLoginStore();
+  const { isNotificationOpen, setIsNotificationOpen, isSearchOpen, setIsSearchOpen } =
+    useSidebarStore();
 
   const isMobile = useMediaQuery({ maxWidth: 767 });
 
@@ -37,23 +36,23 @@ function Sidebar() {
   }
 
   return (
-    <div className="min-w-[260px] h-full bg-white flex flex-col justify-between fixed top-0 left-0 z-[100] py-[41px]">
-      <div className="w-full flex justify-center">
+    <div className='fixed left-0 top-0 z-[100] flex h-screen min-w-[260px] flex-col justify-between bg-semantic-background-surface py-[41px] text-semantic-text-secondary'>
+      <div className='w-full flex justify-center'>
         <Logo />
       </div>
-      <div className="flex flex-col gap-[50px]">
-        <div className="flex flex-col gap-[10px]">
-          <SidebarList setIsLoginModalOpen={setIsLoginModalOpen} />
+      <div className='flex flex-col gap-[50px]'>
+        <div className='flex flex-col gap-[10px]'>
+          <SidebarList />
         </div>
-        <div className="flex w-full justify-center">
-          <div className="w-[206px]">
+        <div className='flex w-full justify-center'>
+          <div className='w-[206px]'>
             <HorizontalBannerSwiper />
           </div>
         </div>
       </div>
-      <div className="flex flex-col w-full items-center justify-center gap-[20px]">
+      <div className='flex flex-col w-full items-center justify-center gap-[20px]'>
         <ProfileInfo />
-        <div className="flex gap-[5px]">
+        <div className='flex gap-[5px]'>
           <DarkMode />
           <AdditionalOption
             setIsAdditionalModalOpen={setIsAdditionalModalOpen}
@@ -67,7 +66,7 @@ function Sidebar() {
         </SidebarModalLayout>
       )}
       {isAdditionalModalOpen && (
-        <div className="absolute translate-x-[270px] bottom-0 -translate-y-[40px]">
+        <div className='absolute translate-x-[270px] bottom-0 -translate-y-[40px]'>
           <AdditionalOptionModal />
         </div>
       )}

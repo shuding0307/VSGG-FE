@@ -2,36 +2,48 @@
 
 import Loading from '@/components/Loading';
 import MainHeader from '@/components/mobile/Headers/MainHeader';
-import { useEffect, useState } from 'react';
-import SearchMobile from './component/SearchMobile';
-import { useQuery } from '@tanstack/react-query';
+import { Dispatch, Ref, SetStateAction, useEffect, useState } from 'react';
 import useSearchStore from '../store/useSearchStore';
-import { useAuthStore } from '@/app/login/store/useAuthStore';
-import getPostList from '@/api/getPostList';
-import NewPopularToggleButtonMobile from './component/NewPopularToggleButtonMobile';
-import AlignModeToggleButtonMobile from './component/AlignModeToggleButtonMobile';
 import ListedPostItemMobile from './component/ListedPostItemMobile';
 import PostItemMobile from './component/PostItemMobile';
+import NewPopularToggleButton from '../_component/NewPopularToggleButton';
+import AlignModeToggleButton from '../_component/AlignModeToggleButton';
+import HorizontalBannerSwiper from '@/components/sidebar/banner/HorizontalBannerSwiper';
+import WritePostMobile from './component/WritePostMobile';
 
-export default function HomeMobile() {
-  const [activeButton, setActiveButton] = useState<string>('createdatetime');
-  const { isLogin, accessToken } = useAuthStore();
+interface Props {
+  postData: IGetPostDTOType[];
+  isLoading: boolean;
+  isFetchingNextPage: boolean;
+  loaderRef: Ref<HTMLDivElement>;
+  refetch: () => void;
+  activeButton: string;
+  setActiveButton: Dispatch<SetStateAction<string>>;
+}
+
+export default function HomeMobile({
+  postData,
+  isLoading,
+  isFetchingNextPage,
+  loaderRef,
+  refetch,
+  activeButton,
+  setActiveButton,
+}: Props) {
   const { keyword } = useSearchStore();
   const [isListed, setIsListed] = useState<boolean>(false);
 
-  const {
-    data: postData,
-    isLoading,
-    refetch,
-  } = useQuery<IGetPostListType>({
-    queryKey: ['POST_LIST', activeButton],
-    queryFn: () => {
-      if (activeButton === 'createdatetime' || activeButton === 'view') {
-        return getPostList(activeButton, keyword, isLogin ? accessToken : '');
-      }
-      throw new Error('Invalid activeButton value');
-    },
-  });
+  // const router = useRouter();
+  // const { isLogin } = useAuthStore.getState();
+  // const { setIsLoginModalOpen } = useLoginStore();
+
+  // const handleWriteClick = (): void => {
+  //   if (!isLogin) {
+  //     setIsLoginModalOpen(true);
+  //     return;
+  //   }
+  //   router.push('/post/selectUpload');
+  // };
 
   useEffect(() => {
     if (keyword === '') {
@@ -39,50 +51,47 @@ export default function HomeMobile() {
     }
   }, [keyword, refetch, postData]);
 
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && keyword.trim() !== '' && !e.nativeEvent.isComposing) {
-      e.preventDefault();
-      refetch();
-    }
-  };
-
-  const handleSearch = () => {
-    if (keyword.trim() !== '') {
-      refetch();
-    }
-  };
-
   return (
-    <div className='w-full h-[100dvh]'>
+    <div className='w-full h-[100dvh] bg-semantic-background-page'>
       <MainHeader />
-      <div className='mobile-layout flex flex-col items-center px-[20px] py-[10px] mobile-scroll'>
-        <SearchMobile handleSearch={handleSearch} handleSearchKeyDown={handleSearchKeyDown} />
-        <section className='flex flex-col justify-center relative w-full items-center mt-[70px]'>
-          <div className='w-full mb-[40px] flex flex-row items-center justify-between'>
-            <NewPopularToggleButtonMobile
-              activeButton={activeButton}
-              setActiveButton={setActiveButton}
-            />
-            <AlignModeToggleButtonMobile isListed={isListed} setIsListed={setIsListed} />
+      <div className='mobile-layout flex flex-col items-center py-[10px] mobile-scroll !bg-semantic-background-page'>
+        <div className='mb-[20px] px-[10px] mt-[20px] flex justify-center'>
+          <HorizontalBannerSwiper />
+        </div>
+        <div className='mt-[22px] w-full mb-[20px]'>
+          <WritePostMobile />
+        </div>
+        <div className='w-full mb-[30px] flex items-center justify-between px-[20px]'>
+          <NewPopularToggleButton
+            activeButton={activeButton}
+            setActiveButton={setActiveButton}
+            isMobile={true}
+          />
+          <AlignModeToggleButton isListed={isListed} setIsListed={setIsListed} />
+        </div>
+        {isLoading ? (
+          <Loading />
+        ) : postData?.length === 0 ? (
+          <div className='flex flex-col flex-grow items-center justify-center'>
+            현재 작성된 게시물이 없습니다.
           </div>
-          {isLoading ? (
-            <Loading />
-          ) : postData?.postDTO.length === 0 ? (
-            <div className='flex flex-col flex-grow items-center justify-center'>
-              현재 작성된 게시물이 없습니다.
+        ) : (
+          postData?.map((post, idx) => (
+            <div key={idx} className='flex flex-col w-full'>
+              {isListed ? (
+                <ListedPostItemMobile post={post} />
+              ) : (
+                <PostItemMobile post={post} voteInfos={post.inGameInfoList} />
+              )}
             </div>
-          ) : (
-            postData?.postDTO.map((post, idx) => (
-              <div key={idx} className='flex flex-col w-full'>
-                {isListed ? (
-                  <ListedPostItemMobile post={post} />
-                ) : (
-                  <PostItemMobile post={post} voteInfos={post.inGameInfoList} />
-                )}
-              </div>
-            ))
-          )}
-        </section>
+          ))
+        )}
+        {isFetchingNextPage && (
+          <div className='text-center py-4 text-[14px] text-[#828282]'>
+            게시물을 불러오는 중입니다...
+          </div>
+        )}
+        <div ref={loaderRef} className='min-h-[30px] w-full' />
       </div>
     </div>
   );

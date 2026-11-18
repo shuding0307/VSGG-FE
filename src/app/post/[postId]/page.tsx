@@ -1,23 +1,21 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import getPostItem from '@/api/getPostItem';
+import getPostItem from '@/api/post/getPostItem';
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuthStore } from '@/app/login/store/useAuthStore';
-import Logo from '@/components/Logo';
 import Loading from '@/components/Loading';
-import CommentArea from '../_component/CommentArea';
-import ContentArea from '../_component/ContentArea';
-import NavigationArea from '../_component/NavigationArea';
-import VoteArea from '../_component/VoteArea';
 import { useMediaQuery } from 'react-responsive';
 import PostDetailMobile from './mobile/PostDetailMobile';
 import { useSidebarStore } from '@/store/sidebar/useSidebarStore';
 import useBodyScrollLock from '@/hooks/sidebar/useBodyScrollLock';
-import { useLoginStore } from '@/store/login/useLoginStore';
+import { useWriteStore } from '@/store/write/useWriteStore';
+import PostDetailPC from './desktop/PostDetailPC';
+import usePostIdStore from './store/usePostIdStore';
+import WebFooter from '@/components/common/footer/WebFooter';
 
-export default function PostRead() {
+export default function PostDetailMain() {
   const { postId } = useParams();
   const id: string = postId as string;
   const isMobile = useMediaQuery({ maxWidth: 767 });
@@ -25,8 +23,9 @@ export default function PostRead() {
   const router = useRouter();
   const [isOwner, setIsOwner] = useState<boolean>(false);
   const [voteData, setVoteData] = useState<IGetInGameInfoType[]>([]);
-  const {setIsLoginModalOpen} = useLoginStore()
   const { isNotificationOpen, isSearchOpen, setRouteState } = useSidebarStore();
+  const { fetchAllChampions } = useWriteStore();
+  const { resetPostVoteState } = usePostIdStore();
   useBodyScrollLock(isNotificationOpen || isSearchOpen);
 
   const {
@@ -39,7 +38,7 @@ export default function PostRead() {
   });
 
   useEffect(() => {
-    setRouteState('HOME');
+    setRouteState('MINI');
   }, [setRouteState]);
 
   useEffect(() => {
@@ -55,40 +54,42 @@ export default function PostRead() {
         setIsOwner(true);
       }
     }
+    if (post) {
+      setVoteData(post.postDTO.inGameInfoList);
+    }
   }, [post, router, user]);
+
+  useEffect(() => {
+    fetchAllChampions();
+    return () => {
+      resetPostVoteState();
+    };
+  }, [fetchAllChampions, resetPostVoteState]);
 
   return (
     <>
       {isMobile ? (
-        <PostDetailMobile />
+        <div className='w-full h-[100dvh] flex flex-col'>
+          <PostDetailMobile />
+        </div>
       ) : (
-        <div className="min-w-[1400px] flex-col items-center">
-          <div className="mb-[100px] mt-[100px] flex flex-col items-center justify-center gap-[32px]">
-            <Logo />
-          </div>
+        <div className='min-w-[1400px] flex-col items-center bg-semantic-background-page text-semantic-text-primary'>
           {isLoading ? (
             <Loading />
           ) : (
             post && (
-              <div className="flex flex-col items-center justify-center px-[50px]">
-                <div>
-                  <NavigationArea />
+              <>
+                <div className='flex flex-col items-center justify-center px-[50px]'>
+                  <div className={'flex gap-[50px] mb-[20px]'}>
+                    <PostDetailPC post={post} voteData={voteData} isOwner={isOwner} />
+                  </div>
                 </div>
-                <div className="flex flex-row gap-[30px] justify-center">
-                  <ContentArea post={post} isOwner={isOwner} setVoteData={setVoteData} />
-                  <CommentArea setIsLoginModalOpen={setIsLoginModalOpen} />
-                </div>
-                <VoteArea
-                  isOwner={isOwner}
-                  post={post}
-                  voteData={voteData}
-                  setIsLoginModalOpen={setIsLoginModalOpen}
-                />
-              </div>
+                <WebFooter />
+              </>
             )
           )}
         </div>
-      )}{' '}
+      )}
     </>
   );
 }

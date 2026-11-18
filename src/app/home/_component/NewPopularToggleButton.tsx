@@ -10,11 +10,16 @@ import Image from 'next/image';
 interface INewPopularToggleButton {
   activeButton: string;
   setActiveButton: Dispatch<SetStateAction<string>>;
+  isMobile?: boolean;
 }
 
 const buttonClass = 'flex justify-center items-center gap-[6px] relative cursor-pointer';
 
-function NewPopularToggleButton({ activeButton, setActiveButton }: INewPopularToggleButton) {
+function NewPopularToggleButton({
+  activeButton,
+  setActiveButton,
+  isMobile,
+}: INewPopularToggleButton) {
   const [isHovered, setIsHovered] = useState<string>('');
 
   return (
@@ -25,7 +30,7 @@ function NewPopularToggleButton({ activeButton, setActiveButton }: INewPopularTo
         onMouseEnter={() => setIsHovered('time')}
         onMouseLeave={() => setIsHovered('')}
       >
-        <div className='relative w-[24px] h-[24px]'>
+        <div className={`relative ${isMobile ? 'w-[16px] h-[16px]' : 'w-[24px] h-[24px]'}`}>
           <Image
             src={Icon_time}
             alt='time'
@@ -56,12 +61,12 @@ function NewPopularToggleButton({ activeButton, setActiveButton }: INewPopularTo
           />
         </div>
         <p
-          className={`transition-colors duration-300 ease-in-out font-semibold ${
+          className={`${isMobile ? 'text-[12px]' : 'text-[16px]'} transition-colors duration-300 ease-in-out font-semibold ${
             activeButton === 'createdatetime'
-              ? 'text-[#8A1F21]'
+              ? 'text-primary-500'
               : isHovered === 'time'
-                ? 'text-[#999999]'
-                : 'text-[#C8C8C8]'
+                ? 'text-semantic-text-muted'
+                : 'text-semantic-text-disabled'
           }`}
         >
           최신
@@ -73,7 +78,7 @@ function NewPopularToggleButton({ activeButton, setActiveButton }: INewPopularTo
         onMouseEnter={() => setIsHovered('view')}
         onMouseLeave={() => setIsHovered('')}
       >
-        <div className='relative w-[24px] h-[24px]'>
+        <div className={`relative ${isMobile ? 'w-[16px] h-[16px]' : 'w-[24px] h-[24px]'}`}>
           <Image
             src={Icon_flame}
             alt='view'
@@ -101,12 +106,12 @@ function NewPopularToggleButton({ activeButton, setActiveButton }: INewPopularTo
         </div>
 
         <p
-          className={`transition-colors duration-300 ease-in-out font-semibold ${
+          className={`${isMobile ? 'text-[12px]' : 'text-[16px]'} transition-colors duration-300 ease-in-out font-semibold ${
             activeButton === 'view'
-              ? 'text-[#8A1F21]'
+              ? 'text-primary-500'
               : isHovered === 'view'
-                ? 'text-[#999999]'
-                : 'text-[#C8C8C8]'
+                ? 'text-semantic-text-muted'
+                : 'text-semantic-text-disabled'
           }`}
         >
           인기

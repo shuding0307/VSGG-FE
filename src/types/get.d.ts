@@ -19,17 +19,17 @@ type IGetPostDTOType = {
   memberDTO: IGetMemberDTOType;
   createdAt: string;
   updatedAt: string;
-  hashtagList: IHashTagListType[];
   inGameInfoList: IGetInGameInfoType[];
   isVote: boolean;
   isDeleted: 'TRUE' | 'FALSE';
   daysUntilEnd: number;
   liked: boolean;
+  category: 'FAULT' | 'CHAMPION';
 };
 
 type IGetVideoType = {
   url: string;
-  type: string;
+  type: string; //FILE or LINK
 };
 
 type IGetMemberDTOType = {
@@ -45,11 +45,6 @@ type IGetMemberDTOType = {
   agreeTerms: boolean;
   agreePrivacy: boolean;
   agreePromotion: boolean;
-};
-
-type IHashTagListType = {
-  id: number;
-  name: string;
 };
 
 // 게시물 상세 조회 페이지
@@ -75,19 +70,14 @@ type IGetCommentItemType = {
   children?: IGetCommentItemType[];
 };
 
-type IGetVoteType = {
-  championName: string;
-  votedRatio: number;
-  position: string;
-  tier: string;
-};
-
 type IGetInGameInfoType = {
-  averageRatio?: number | null;
-  championName?: string;
   inGameInfoId: number;
-  position?: string;
   tier: string;
+  position: string;
+  championName: string;
+  averageRatio?: number | null;
+  voteCount: number;
+  claim: string;
 };
 
 // 알람 확인
