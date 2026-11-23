@@ -175,7 +175,7 @@ src
 <!-- MY CONTRIBUTIONS -->
 ## My Contributions
 
-I have been working this project as a frontend developer since June 2024. My main areas of contribution include:
+I have been working on this project as a frontend developer since June 2024. My main areas of contribution include:
 
 **Voting & results**
 * Implemented the champion fault-ratio voting chart and integrated it with the voting API.
