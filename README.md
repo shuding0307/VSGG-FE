@@ -175,7 +175,7 @@ src
 <!-- MY CONTRIBUTIONS -->
 ## My Contributions
 
-Since joining the project as a frontend developer in June 2024, I have made approximately 400 commits. My main areas of contribution include:
+I have been working this project as a frontend developer since June 2024. My main areas of contribution include:
 
 **Voting & results**
 * Implemented the champion fault-ratio voting chart and integrated it with the voting API.
