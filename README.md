@@ -183,6 +183,9 @@ I have been working on this project as a frontend developer since June 2024. My 
 * Implemented result-visibility rules: voters can see the results after voting, while post authors can always view the results of their own posts.
 * Added **claim voting** across desktop, mobile, and the home feed, then consolidated the related components in the shared `common/vote` directory.
 
+**Write Post**
+* Created a custom calendar component for selecting the judging period.
+
 **Comments**
 * Integrated comment and reply APIs, including nickname mentions when replying to a comment.
 * Combined comment and reply inputs into a shared component with Enter-to-submit, auto-focus, and whitespace trimming.
@@ -192,7 +195,6 @@ I have been working on this project as a frontend developer since June 2024. My 
 
 **My page**
 * Built the My Page, My Posts, and Judging History pages, including pagination and chart animations.
-* Created a custom calendar component for selecting the judging period.
 
 **Home & posts**
 * Set up the initial API layer with a custom fetcher and token refresh, and integrated post-list and post-detail APIs.
